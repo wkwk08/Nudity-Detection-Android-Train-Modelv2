@@ -1,0 +1,29 @@
+# === Core Deep Learning ===
+torch==1.13.1                # PyTorch framework for training/evaluation
+torchvision==0.14.1          # Vision models, datasets, transforms
+
+# === Model Conversion ===
+onnx==1.12.0                 # Open Neural Network Exchange format
+onnx-tf==1.10.0              # ONNX → TensorFlow conversion
+tensorflow==2.10.1           # TensorFlow framework (needed for TFLite conversion)
+tensorflow-probability==0.18.0 # Probabilistic layers (dependency for TF ecosystem)
+
+# === Numerical + Serialization ===
+numpy==1.23.5                # Numerical arrays
+protobuf==3.19.6             # Serialization (used by ONNX/TF)
+
+# === ML Evaluation ===
+scikit-learn==1.2.2          # Metrics: accuracy, precision, recall, F1, confusion matrix
+pandas==1.5.3                # DataFrames for logs, summaries, CSV handling
+
+# === Visualization ===
+matplotlib==3.6.3            # Plotting (training curves, metrics)
+seaborn==0.12.2              # Heatmaps (confusion matrices)
+
+# === Dashboard ===
+streamlit==1.20.0            # Interactive dashboard UI
+
+# === Utilities ===
+tqdm==4.65.0                 # Progress bars for training/evaluation loops
+python-dotenv==1.0.0         # Load environment variables from .env
+opencv-python==4.7.0.72      # Image preprocessing (baseline skin detection)
