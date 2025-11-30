@@ -7,7 +7,53 @@ import seaborn as sns
 # Import paths from config.py
 from config import OUTPUT_DIR, LOGS_DIR
 
-st.set_page_config(page_title="Nudity Detection Dashboard", layout="wide")
+# === RESPONSIVE CONFIGURATION ===
+st.set_page_config(
+    page_title="Nudity Detection Dashboard",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
+
+# Add responsive CSS
+st.markdown("""
+<style>
+    /* Container constraints */
+    .main .block-container {
+        max-width: 100%;
+        padding: 1rem;
+    }
+    
+    /* Make graphs responsive */
+    .stPyplot {
+        width: 100% !important;
+        height: auto !important;
+    }
+    
+    .stPyplot > div {
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+    }
+    
+    /* Scale images properly */
+    .stPyplot img {
+        max-width: 100% !important;
+        height: auto !important;
+        object-fit: contain !important;
+    }
+    
+    /* Expander content */
+    .streamlit-expanderContent {
+        overflow: hidden;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# Set matplotlib to use responsive settings
+plt.rcParams['figure.dpi'] = 100
+plt.rcParams['savefig.dpi'] = 100
+plt.rcParams['figure.autolayout'] = True
+
 st.title("📊 Nudity Detection Training & Evaluation Dashboard")
 
 OBJECTIVES = ["Objective_1", "Objective_2", "Objective_3", "Objective_4"]
@@ -30,13 +76,13 @@ with tab1:
         df.columns = ["Objective", "Total"]
         df = df[df["Objective"] != "GrandTotal"]
         df["Total"] = df["Total"].astype(int)
-        st.dataframe(df)
+        st.dataframe(df, use_container_width=True)
 
         grand_total = pd.read_csv(summary_path)
         grand = grand_total[grand_total["Objective"] == "GrandTotal"]["TotalCount"].values[0]
         st.markdown(f"**📦 Grand Total Images Across All Objectives: {grand}**")
     except FileNotFoundError:
-        st.dataframe(pd.DataFrame(columns=["Objective", "Total"]))
+        st.dataframe(pd.DataFrame(columns=["Objective", "Total"]), use_container_width=True)
 
 # === TAB 2: FINAL EVALUATION METRICS ===
 with tab2:
@@ -44,24 +90,28 @@ with tab2:
         eval_path = os.path.join(LOGS_DIR, "evaluation_results.csv")
         eval_df = pd.read_csv(eval_path)
         st.subheader("Final Evaluation Metrics (ML vs Baseline)")
-        st.dataframe(eval_df)
+        st.dataframe(eval_df, use_container_width=True)
 
         for metric in ["Acc", "Prec", "Rec", "F1"]:
             with st.expander(f"{metric} Comparison"):
-                fig, ax = plt.subplots()
-                ax.bar(eval_df["Objective"], eval_df[f"ML_{metric}"], width=0.4, label="ML Model", align="center")
-                ax.bar(eval_df["Objective"], eval_df[f"Base_{metric}"], width=0.4, label="Baseline", align="edge")
-                ax.set_title(f"ML vs Baseline ({metric})")
-                ax.set_ylabel(metric)
-                ax.set_ylim(0, 1.1)
-                ax.legend()
-                st.pyplot(fig)
+                col1, col2, col3 = st.columns([1, 8, 1])
+                with col2:
+                    fig, ax = plt.subplots(figsize=(8, 5))
+                    ax.bar(eval_df["Objective"], eval_df[f"ML_{metric}"], width=0.4, label="ML Model", align="center")
+                    ax.bar(eval_df["Objective"], eval_df[f"Base_{metric}"], width=0.4, label="Baseline", align="edge")
+                    ax.set_title(f"ML vs Baseline ({metric})")
+                    ax.set_ylabel(metric)
+                    ax.set_ylim(0, 1.1)
+                    ax.legend()
+                    plt.tight_layout()
+                    st.pyplot(fig, use_container_width=True)
+                    plt.close()
 
         avg_metrics = eval_df[["ML_Acc", "ML_Prec", "ML_Rec", "ML_F1"]].mean()
         st.markdown("### 📊 Aggregate ML Performance Across All Objectives")
         st.write(avg_metrics)
     except FileNotFoundError:
-        st.dataframe(pd.DataFrame(columns=["Objective", "ML_Acc", "Base_Acc", "ML_Prec", "Base_Prec", "ML_Rec", "Base_Rec", "ML_F1", "Base_F1"]))
+        st.dataframe(pd.DataFrame(columns=["Objective", "ML_Acc", "Base_Acc", "ML_Prec", "Base_Prec", "ML_Rec", "Base_Rec", "ML_F1", "Base_F1"]), use_container_width=True)
 
 # === TAB 3: TRAINING LOGS ===
 with tab3:
@@ -71,28 +121,34 @@ with tab3:
             try:
                 df = pd.read_csv(log_file)
                 st.subheader("Training Metrics Table")
-                st.dataframe(df)
+                st.dataframe(df, use_container_width=True)
 
-                fig_acc, ax_acc = plt.subplots()
-                ax_acc.plot(df["Epoch"], df["TrainAcc"], label="Train Accuracy", marker="o")
-                ax_acc.plot(df["Epoch"], df["ValAcc"], label="Validation Accuracy", marker="o")
-                if "TestAcc" in df.columns:
-                    ax_acc.plot(df["Epoch"], df["TestAcc"], label="Test Accuracy", marker="o")
-                ax_acc.set_xlabel("Epoch")
-                ax_acc.set_ylabel("Accuracy")
-                ax_acc.legend()
-                st.pyplot(fig_acc)
+                col1, col2, col3 = st.columns([1, 8, 1])
+                with col2:
+                    fig_acc, ax_acc = plt.subplots(figsize=(8, 5))
+                    ax_acc.plot(df["Epoch"], df["TrainAcc"], label="Train Accuracy", marker="o")
+                    ax_acc.plot(df["Epoch"], df["ValAcc"], label="Validation Accuracy", marker="o")
+                    if "TestAcc" in df.columns:
+                        ax_acc.plot(df["Epoch"], df["TestAcc"], label="Test Accuracy", marker="o")
+                    ax_acc.set_xlabel("Epoch")
+                    ax_acc.set_ylabel("Accuracy")
+                    ax_acc.legend()
+                    plt.tight_layout()
+                    st.pyplot(fig_acc, use_container_width=True)
+                    plt.close()
 
-                fig_loss, ax_loss = plt.subplots()
-                ax_loss.plot(df["Epoch"], df["TrainLoss"], label="Train Loss", marker="o", color="red")
-                if "ValLoss" in df.columns:
-                    ax_loss.plot(df["Epoch"], df["ValLoss"], label="Validation Loss", marker="o", color="orange")
-                ax_loss.set_xlabel("Epoch")
-                ax_loss.set_ylabel("Loss")
-                ax_loss.legend()
-                st.pyplot(fig_loss)
+                    fig_loss, ax_loss = plt.subplots(figsize=(8, 5))
+                    ax_loss.plot(df["Epoch"], df["TrainLoss"], label="Train Loss", marker="o", color="red")
+                    if "ValLoss" in df.columns:
+                        ax_loss.plot(df["Epoch"], df["ValLoss"], label="Validation Loss", marker="o", color="orange")
+                    ax_loss.set_xlabel("Epoch")
+                    ax_loss.set_ylabel("Loss")
+                    ax_loss.legend()
+                    plt.tight_layout()
+                    st.pyplot(fig_loss, use_container_width=True)
+                    plt.close()
             except FileNotFoundError:
-                st.dataframe(pd.DataFrame(columns=["Epoch", "TrainAcc", "ValAcc", "TestAcc", "TrainLoss", "ValLoss"]))
+                st.dataframe(pd.DataFrame(columns=["Epoch", "TrainAcc", "ValAcc", "TestAcc", "TrainLoss", "ValLoss"]), use_container_width=True)
 
 # === TAB 4: CLASS DISTRIBUTION ===
 with tab4:
@@ -100,18 +156,22 @@ with tab4:
     try:
         dist_path = os.path.join(LOGS_DIR, "validation_summary.csv")
         dist_df = pd.read_csv(dist_path)
-        st.dataframe(dist_df)
+        st.dataframe(dist_df, use_container_width=True)
 
         for obj in OBJECTIVES:
             obj_df = dist_df[dist_df["Objective"] == obj]
-            fig, ax = plt.subplots()
-            grouped = obj_df.groupby(["Split", "Class"])["Count"].sum().unstack().fillna(0)
-            grouped.plot(kind="bar", stacked=True, ax=ax)
-            ax.set_title(f"Class Distribution for {obj}")
-            ax.set_ylabel("Image Count")
-            st.pyplot(fig)
+            col1, col2, col3 = st.columns([1, 8, 1])
+            with col2:
+                fig, ax = plt.subplots(figsize=(8, 5))
+                grouped = obj_df.groupby(["Split", "Class"])["Count"].sum().unstack().fillna(0)
+                grouped.plot(kind="bar", stacked=True, ax=ax)
+                ax.set_title(f"Class Distribution for {obj}")
+                ax.set_ylabel("Image Count")
+                plt.tight_layout()
+                st.pyplot(fig, use_container_width=True)
+                plt.close()
     except FileNotFoundError:
-        st.dataframe(pd.DataFrame(columns=["Objective", "Dataset", "Split", "Class", "Count"]))
+        st.dataframe(pd.DataFrame(columns=["Objective", "Dataset", "Split", "Class", "Count"]), use_container_width=True)
 
 # === TAB 5: CONFUSION MATRICES ===
 with tab5:
@@ -121,10 +181,14 @@ with tab5:
             cm_path = os.path.join(LOGS_DIR, f"{obj}_confusion.csv")
             cm_df = pd.read_csv(cm_path, index_col=0)
             st.write(f"Confusion Matrix for {obj}")
-            fig, ax = plt.subplots()
-            sns.heatmap(cm_df, annot=True, fmt="d", cmap="Blues", ax=ax)
-            ax.set_xlabel("Predicted")
-            ax.set_ylabel("Actual")
-            st.pyplot(fig)
+            col1, col2, col3 = st.columns([1, 6, 1])
+            with col2:
+                fig, ax = plt.subplots(figsize=(6, 5))
+                sns.heatmap(cm_df, annot=True, fmt="d", cmap="Blues", ax=ax)
+                ax.set_xlabel("Predicted")
+                ax.set_ylabel("Actual")
+                plt.tight_layout()
+                st.pyplot(fig, use_container_width=True)
+                plt.close()
         except FileNotFoundError:
-            st.dataframe(pd.DataFrame(columns=["Actual", "Predicted"]))
+            st.dataframe(pd.DataFrame(columns=["Actual", "Predicted"]), use_container_width=True)
