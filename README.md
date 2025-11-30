@@ -106,8 +106,9 @@ The ML models consistently outperformed the baseline, especially in precision an
 ## 📑 Reviewer Notes
 - **Balanced datasets:** Transparent counts logged in `validation_summary.csv` and `validation_totals.csv`.  
 - **Confusion matrices:** Exported per objective (e.g., `Objective_1_confusion.csv`).  
-- **Training logs:** Detailed logs per objective (e.g., `Objective_1_training_log.csv`).  
-- **Reproducibility:** Modular scripts, `.env` path management, reviewer-proof CSVs and models.
+- **Training logs:** Detailed logs per objective (e.g., `Objective_1_training_log.csv`) showing epoch-by-epoch convergence.  
+- **Reproducibility:** Modular scripts, `.env` path management, reviewer-proof CSVs and models.  
+- **Model artifacts:** `.pth` files are the trained PyTorch checkpoints used for ML evaluation. Baseline results come from Emon's threshold algorithm.
 
 ---
 
@@ -154,6 +155,7 @@ python scripts/validate_splits.py
 ```bash
 python scripts/train_all_objectives.py
 ```
+> **Note:** `.pth` files are the trained PyTorch models used for ML evaluation.
 
 ### 4. Evaluation
 ```bash
