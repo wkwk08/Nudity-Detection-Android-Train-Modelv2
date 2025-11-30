@@ -59,7 +59,7 @@ You must create it manually in the project root.
 
 ### Example `.env`
 ```env
-BASE_DIR=C:/Users/yourname/Documents/Nudity-Detection-Android-Train-Modelv2
+BASE_DIR=C:/Users/yourname/Nudity-Detection-Android-Train-Model
 DATASETS_DIR=${BASE_DIR}/datasets
 OUTPUT_DIR=${BASE_DIR}/balanced_output
 MODELS_DIR=${BASE_DIR}/models
