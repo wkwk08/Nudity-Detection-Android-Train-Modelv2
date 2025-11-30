@@ -20,7 +20,7 @@ This repository is part of an ongoing undergraduate thesis project at Pamantasan
 
 This project builds upon the nudity detection algorithm proposed by **Rahat Yeasin Emon** (2020):  
 **"A Novel Nudity Detection Algorithm for Web and Mobile Application Development"**  
-Available on [arXiv:2006.01780](https://arxiv.org/abs/2006.01780)
+Available on [ResearchGate](https://www.researchgate.net/publication/341851946_A_Novel_Nudity_Detection_Algorithm_for_Web_and_Mobile_Application_Development) | [arXiv PDF](https://arxiv.org/ftp/arxiv/papers/2006/2006.01780.pdf)
 
 Key components adapted:
 - RGB + HSV skin pixel thresholds  
